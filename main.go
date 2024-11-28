@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -10,6 +9,7 @@ import (
 	"go.wasmcloud.dev/provider"
 )
 
+//go:generate wit-bindgen-wrpc go --out-dir bindings --world imports --package github.com/jamesstocktonj1/ticker-provider/bindings wit
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)

@@ -5,6 +5,7 @@ go 1.23.1
 require (
 	github.com/madflojo/tasks v1.2.1
 	go.wasmcloud.dev/provider v0.0.4
+	wrpc.io/go v0.0.3
 )
 
 require (
@@ -41,5 +42,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/grpc v1.65.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
-	wrpc.io/go v0.0.3 // indirect
 )
