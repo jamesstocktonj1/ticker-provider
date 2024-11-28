@@ -41,7 +41,8 @@ func run() error {
 
 	// Handle control interface operations
 	go func() {
-		providerCh <- p.Start()
+		err := p.Start()
+		providerCh <- err
 	}()
 
 	// Shutdown on SIGINT

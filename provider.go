@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"time"
 
+	"github.com/jamesstocktonj1/ticker-provider/bindings/jamesstocktonj1/ticker/ticker"
 	"github.com/madflojo/tasks"
 	"go.wasmcloud.dev/provider"
 )
@@ -39,7 +41,19 @@ func (t *Ticker) Shutdown() error {
 
 func (t *Ticker) TaskFunc(task tasks.TaskContext) error {
 	t.provider.Logger.Info("task execute", "task_id", task.ID())
-	
+
+	taskErr, err := ticker.Task(
+		context.Background(),
+		t.provider.OutgoingRpcClient(task.ID()),
+	)
+	if err != nil || taskErr == nil {
+		t.provider.Logger.Error("error: ticker.Task", "error", err, "task_id", task.ID())
+		return err
+	} else if taskErr.Discriminant() != ticker.TaskErrorNone {
+		t.provider.Logger.Error("error: ticker.Task TaskError", "error", err, "task_id", task.ID())
+		return errors.New(taskErr.String())
+	}
+
 	return nil
 }
 
@@ -49,6 +63,7 @@ func (t *Ticker) ErrorFunc(task tasks.TaskContext, err error) {
 }
 
 func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) error {
+	t.provider.Logger.Info("handlePutTargetLink", "link", link)
 	timeInterval, ok := link.TargetConfig[IntervalConfigKey]
 	if !ok {
 		return ErrIntervalNotSpecified
@@ -59,7 +74,7 @@ func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) erro
 		return ErrIntervalFormatInvalid
 	}
 
-	err = t.tasks.AddWithID(link.Name, &tasks.Task{
+	err = t.tasks.AddWithID(link.SourceID, &tasks.Task{
 		Interval:               timeDuration,
 		FuncWithTaskContext:    t.TaskFunc,
 		ErrFuncWithTaskContext: t.ErrorFunc,
@@ -71,7 +86,8 @@ func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) erro
 }
 
 func (t *Ticker) handleDelTargetLink(link provider.InterfaceLinkDefinition) error {
-	task, err := t.tasks.Lookup(link.Name)
+	t.provider.Logger.Info("handleDelTargetLink", "link", link)
+	task, err := t.tasks.Lookup(link.SourceID)
 	if err != nil || task == nil {
 		return ErrTickerNotFound
 	}
