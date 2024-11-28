@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/bytecodealliance/wasm-tools-go/cm"
 	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/jamesstocktonj1/ticker/ticker"
 	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/wasi/keyvalue/atomics"
 	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/wasi/keyvalue/store"
@@ -63,6 +64,27 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 func handleTask() ticker.TaskError {
 	logger.Info("handleTask")
+
+	bucket, _, isErr := store.Open("counter").Result()
+	if isErr {
+		logger.Error("error: unable to open keyvalue store")
+		return ticker.TaskErrorError("error: unable to open keyvalue store")
+	}
+
+	cursor := uint64(0)
+	keysResult, _, isErr := bucket.ListKeys(cm.Some(cursor)).Result()
+	if isErr {
+		logger.Error("error: unable to fetch keys")
+		return ticker.TaskErrorError("error: unable to fetch keys")
+	}
+
+	keys := keysResult.Keys.Slice()
+	for _, k := range keys {
+		_, _, isErr := bucket.Delete(k).Result()
+		if isErr {
+			logger.Error("error: unable to delete key", "key", k)
+		}
+	}
 	return ticker.TaskErrorNone()
 }
 
