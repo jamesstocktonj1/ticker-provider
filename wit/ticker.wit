@@ -1,0 +1,8 @@
+interface ticker {
+    variant task-error {
+        none,
+        error(string)
+    }
+
+    task: func() -> task-error;
+}

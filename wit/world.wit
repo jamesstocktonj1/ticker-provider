@@ -1,0 +1,9 @@
+package jamesstocktonj1:ticker@0.1.0;
+
+world imports {
+    import ticker;
+}
+
+world exports {
+    export ticker;
+} 
