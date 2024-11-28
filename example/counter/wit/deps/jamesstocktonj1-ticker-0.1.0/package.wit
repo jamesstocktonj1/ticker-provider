@@ -1,0 +1,17 @@
+package jamesstocktonj1:ticker@0.1.0;
+
+interface ticker {
+  variant task-error {
+    none,
+    error(string),
+  }
+
+  task: func() -> task-error;
+}
+
+world imports {
+  import ticker;
+}
+world exports {
+  export ticker;
+}

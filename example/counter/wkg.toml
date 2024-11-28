@@ -1,0 +1,2 @@
+[overrides]
+"jamesstocktonj1:ticker" = { path = "../../wit" }

@@ -6,18 +6,24 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/jamesstocktonj1/ticker/ticker"
 	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/wasi/keyvalue/atomics"
 	"github.com/jamesstocktonj1/ticker-provider/example/counter/gen/wasi/keyvalue/store"
+	"go.wasmcloud.dev/component/log/wasilog"
 	"go.wasmcloud.dev/component/net/wasihttp"
 )
 
+var logger = wasilog.ContextLogger("counter")
+
 func init() {
 	wasihttp.HandleFunc(handleRequest)
+	ticker.Exports.Task = handleTask
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
 	bucket, _, isErr := store.Open("counter").Result()
 	if isErr {
+		logger.Error("error: unable to open keyvalue store")
 		mar := json.NewEncoder(w)
 		mar.SetIndent("", "  ")
 		mar.Encode(map[string]string{
@@ -33,6 +39,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 
 	count, _, isErr := atomics.Increment(bucket, path, 1).Result()
 	if isErr {
+		logger.Error("error: enable to increment counter")
 		mar := json.NewEncoder(w)
 		mar.SetIndent("", "  ")
 		mar.Encode(map[string]string{
@@ -43,14 +50,20 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info("handleRequest", "count", count, "key", path)
 	mar := json.NewEncoder(w)
 	mar.SetIndent("", "  ")
 	mar.Encode(map[string]any{
-		"counter": int(count),
-		"key":     path,
+		"count": int(count),
+		"key":   path,
 	})
 	w.WriteHeader(http.StatusOK)
 	return
+}
+
+func handleTask() ticker.TaskError {
+	logger.Info("handleTask")
+	return ticker.TaskErrorNone()
 }
 
 func main() {}
