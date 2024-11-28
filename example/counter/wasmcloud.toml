@@ -1,0 +1,9 @@
+name = "ticker-counter"
+language = "tinygo"
+type = "component"
+version = "0.1.0"
+
+[component]
+wit_world = "counter"
+wasm_target = "wasm32-wasip2"
+destination = "build/ticker_counter_s.wasm"

@@ -1,0 +1,7 @@
+services:
+  valkey:
+    image: bitnami/valkey:latest
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
