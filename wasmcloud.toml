@@ -4,5 +4,5 @@ type = "provider"
 version = "0.1.0"
 
 [provider]
-vendor = "wasmCloud"
+vendor = "jamesstocktonj1"
 bin_name = "wasmcloud-ticker-provider"
