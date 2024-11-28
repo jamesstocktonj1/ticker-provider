@@ -22,7 +22,7 @@ func init() {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	bucket, _, isErr := store.Open("counter").Result()
+	bucket, _, isErr := store.Open("").Result()
 	if isErr {
 		logger.Error("error: unable to open keyvalue store")
 		mar := json.NewEncoder(w)
@@ -65,7 +65,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 func handleTask() ticker.TaskError {
 	logger.Info("handleTask")
 
-	bucket, _, isErr := store.Open("counter").Result()
+	bucket, _, isErr := store.Open("").Result()
 	if isErr {
 		logger.Error("error: unable to open keyvalue store")
 		return ticker.TaskErrorError("error: unable to open keyvalue store")
