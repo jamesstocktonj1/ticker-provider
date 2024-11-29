@@ -4,7 +4,8 @@ go 1.23.1
 
 require (
 	github.com/bytecodealliance/wasm-tools-go v0.3.2
-	github.com/madflojo/tasks v1.2.1
+	github.com/go-co-op/gocron/v2 v2.12.4
+	github.com/google/uuid v1.6.0
 	go.bytecodealliance.org v0.4.0
 	go.wasmcloud.dev/component v0.0.5
 	go.wasmcloud.dev/provider v0.0.4
@@ -18,15 +19,15 @@ require (
 	github.com/docker/libtrust v0.0.0-20160708172513-aabc10ec26b7 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0 // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/nats-io/nats.go v1.37.0 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/regclient/regclient v0.7.2 // indirect
-	github.com/rs/xid v1.6.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/samber/lo v1.47.0 // indirect
 	github.com/samber/slog-common v0.17.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -48,6 +49,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
+	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect

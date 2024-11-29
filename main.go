@@ -45,6 +45,9 @@ func run() error {
 		providerCh <- err
 	}()
 
+	// Start ticker scheduler
+	t.Start()
+
 	// Shutdown on SIGINT
 	signal.Notify(signalCh, syscall.SIGINT)
 
