@@ -13,8 +13,12 @@ import (
 	"go.wasmcloud.dev/provider"
 )
 
+const (
+	OtelName = "ticker-provider"
+)
+
 var (
-	tracer = otel.Tracer("ticker-provider")
+	tracer = otel.Tracer(OtelName)
 
 	ErrTickerNotFound = errors.New("error ticker task not found")
 )
