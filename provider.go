@@ -109,8 +109,13 @@ func (t *Ticker) handleDelTargetLink(link provider.InterfaceLinkDefinition) erro
 	if !ok {
 		return ErrTickerNotFound
 	}
-	t.tasks.RemoveJob(taskId)
 
+	err := t.tasks.RemoveJob(taskId)
+	if err != nil {
+		return err
+	}
+
+	delete(t.taskList, link.SourceID)
 	return nil
 }
 

@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/bytecodealliance/wasm-tools-go v0.3.2
+	github.com/go-co-op/gocron/mocks/v2 v2.0.0-20241125191624-c7c0a17f0572
 	github.com/go-co-op/gocron/v2 v2.12.4
 	github.com/google/uuid v1.6.0
 	github.com/nats-io/nats.go v1.37.0
@@ -12,6 +13,7 @@ require (
 	go.bytecodealliance.org v0.4.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.7.0
 	go.opentelemetry.io/otel v1.32.0
+	go.uber.org/mock v0.5.0
 	go.wasmcloud.dev/component v0.0.5
 	go.wasmcloud.dev/provider v0.0.5-0.20241022182135-1be6bd144fb2
 	go.wasmcloud.dev/wadge v0.7.0
