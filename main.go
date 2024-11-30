@@ -2,10 +2,13 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
+	slogmulti "github.com/samber/slog-multi"
+	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.wasmcloud.dev/provider"
 )
 
@@ -32,6 +35,14 @@ func run() error {
 	)
 	if err != nil {
 		return err
+	}
+
+	// Forward logs to Otel
+	if p.HostData().OtelConfig.EnableObservability || p.HostData().OtelConfig.EnableLogs {
+		p.Logger = slog.New(slogmulti.Fanout(
+			p.Logger.Handler(),
+			otelslog.NewLogger(OtelName).Handler(),
+		))
 	}
 	t.provider = p
 

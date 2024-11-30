@@ -8,10 +8,18 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	"github.com/jamesstocktonj1/ticker-provider/bindings/jamesstocktonj1/ticker/ticker"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.wasmcloud.dev/provider"
 )
 
+const (
+	OtelName = "ticker-provider"
+)
+
 var (
+	tracer = otel.Tracer(OtelName)
+
 	ErrTickerNotFound = errors.New("error ticker task not found")
 )
 
@@ -34,6 +42,9 @@ func CreateTicker() (*Ticker, error) {
 }
 
 func (t *Ticker) Start() error {
+	_, span := tracer.Start(context.Background(), "Start")
+	defer span.End()
+
 	t.tasks.Start()
 	return nil
 }
@@ -47,18 +58,25 @@ func (t *Ticker) Shutdown() error {
 }
 
 func (t *Ticker) TaskFunc(taskId string) error {
+	ctx, span := tracer.Start(context.Background(), "TaskFunc")
+	span.SetAttributes(attribute.String("task_id", taskId))
+	defer span.End()
+
 	t.provider.Logger.Info("task execute", "task_id", taskId)
 
 	taskErr, err := ticker.Task(
-		context.Background(),
+		injectTraceHeader(ctx),
 		t.provider.OutgoingRpcClient(taskId),
 	)
 	if err != nil || taskErr == nil {
 		t.provider.Logger.Error("error: ticker.Task", "error", err, "task_id", taskId)
+		span.RecordError(err)
 		return err
 	} else if taskErr.Discriminant() != ticker.TaskErrorNone {
+		err := errors.New(taskErr.String())
 		t.provider.Logger.Error("error: ticker.Task TaskError", "error", err, "task_id", taskId)
-		return errors.New(taskErr.String())
+		span.RecordError(err)
+		return err
 	}
 
 	return nil
