@@ -19,6 +19,16 @@ func TestNewSchedulerJob(t *testing.T) {
 		assert.NotNil(t, job)
 	})
 
+	t.Run("interval: missing period", func(t *testing.T) {
+		cfg := map[string]string{
+			"type": "interval",
+		}
+
+		job, err := newSchedulerJob(cfg)
+		assert.Error(t, err)
+		assert.Nil(t, job)
+	})
+
 	t.Run("interval: invalid period", func(t *testing.T) {
 		cfg := map[string]string{
 			"type":   "interval",
