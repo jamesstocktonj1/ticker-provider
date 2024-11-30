@@ -3,8 +3,8 @@ name: Build Ticker Provider
 on:
   push:
     paths-ignore:
-      - .github
-      - example
+      - .github/**
+      - example/**
     branches:
       - main
   workflow_dispatch:
