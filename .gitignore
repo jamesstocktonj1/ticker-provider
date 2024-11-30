@@ -27,3 +27,6 @@ go.work.sum
 # provider build
 build/
 wasmcloud-ticker-provider
+
+# wit build
+*.wasm
