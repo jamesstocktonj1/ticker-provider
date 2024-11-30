@@ -3,6 +3,15 @@
 version = 1
 
 [[packages]]
+name = "jamesstocktonj1:ticker"
+registry = "ghcr.io"
+
+[[packages.versions]]
+requirement = "=0.1.0"
+version = "0.1.0"
+digest = "sha256:93e8b1b7786b8b284cb355e7a2cf7a05e50d3f10f07e2323a9a364c86e73407d"
+
+[[packages]]
 name = "wasi:http"
 registry = "wasi.dev"
 
