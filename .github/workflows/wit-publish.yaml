@@ -29,9 +29,6 @@ jobs:
         run: |
           cat << EOF > package_config.toml
           [namespace_registries]
-          wasmcloud = "wasmcloud.com"
-          wrpc = "bytecodealliance.org"
-          wasi = "wasi.dev"
           jamesstocktonj1 = "ghcr.io"
 
           [registry."ghcr.io".oci]
