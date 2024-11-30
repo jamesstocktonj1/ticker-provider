@@ -22,11 +22,24 @@ jobs:
 
       - name: Install wash-cli
         uses: wasmCloud/common-actions/install-wash@main
+      - name: Setup Registry
+        env:
+          WASH_REG_USER: ${{ github.actor }}
+          WASH_REG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat << EOF > package_config.toml
+          [namespace_registries]
+          wasmcloud = "wasmcloud.com"
+          wrpc = "bytecodealliance.org"
+          wasi = "wasi.dev"
+          jamesstocktonj1 = "ghcr.io"
+
+          [registry."ghcr.io".oci]
+          auth = { username = "${WASH_REG_USER}", password = "${WASH_REG_PASSWORD}" }
+          EOF
+          echo "WASH_PACKAGE_CONFIG_FILE=$(realpath package_config.toml)" >> $GITHUB_ENV
 
       - name: Build Wit
         run: wash wit build
       - name: Publish Wit
-        env:
-          WASH_REG_USER: ${{ github.actor }}
-          WASH_REG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: wash wit publish *.wasm --wit-registry ghcr.io
+        run: wash wit publish *.wasm
