@@ -50,7 +50,8 @@ spec:
     - name: ticker
       type: capability
       properties:
-        image: file://../../build/wasmcloud-ticker-provider.par.gz
+        # image: file://../../build/wasmcloud-ticker-provider.par.gz
+        image: ghcr.io/jamesstocktonj1/ticker-provider:main
 
     - name: httpserver
       type: capability
