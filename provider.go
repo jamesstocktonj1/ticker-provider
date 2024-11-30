@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"time"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
@@ -12,14 +11,8 @@ import (
 	"go.wasmcloud.dev/provider"
 )
 
-const (
-	IntervalConfigKey = "interval"
-)
-
 var (
-	ErrIntervalNotSpecified  = errors.New("error time interval not configured")
-	ErrIntervalFormatInvalid = errors.New("error time interval is not correctly formatted")
-	ErrTickerNotFound        = errors.New("error ticker task not found")
+	ErrTickerNotFound = errors.New("error ticker task not found")
 )
 
 type Ticker struct {
@@ -73,18 +66,14 @@ func (t *Ticker) TaskFunc(taskId string) error {
 
 func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) error {
 	t.provider.Logger.Info("handlePutTargetLink", "link", link)
-	timeInterval, ok := link.TargetConfig[IntervalConfigKey]
-	if !ok {
-		return ErrIntervalNotSpecified
-	}
 
-	timeDuration, err := time.ParseDuration(timeInterval)
+	jobDef, err := newSchedulerJob(link.TargetConfig)
 	if err != nil {
-		return ErrIntervalFormatInvalid
+		return err
 	}
 
 	job, err := t.tasks.NewJob(
-		gocron.DurationJob(timeDuration),
+		jobDef,
 		gocron.NewTask(t.TaskFunc, link.SourceID),
 	)
 	if err != nil {

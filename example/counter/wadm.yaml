@@ -38,8 +38,14 @@ spec:
             interfaces: [task]
             target_config:
               - name: ticker-config
-                properties: 
-                  interval: 5s
+                properties:
+                  type: interval
+                  period: 10s
+              # - name: cron-config
+              #   properties:
+              #     type: cron
+              #     cron: "0 * * * * *"
+              #     seconds: "true"
 
     - name: ticker
       type: capability
