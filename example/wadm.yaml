@@ -3,19 +3,17 @@ kind: Application
 metadata:
   name: ticker-counter
   annotations:
-    description: 'HTTP hello world demo in Golang (TinyGo), using the WebAssembly Component Model and WebAssembly Interfaces Types (WIT)'
-    wasmcloud.dev/authors: wasmCloud team
-    wasmcloud.dev/source-url: https://github.com/wasmCloud/wasmCloud/blob/main/examples/golang/components/http-hello-world/wadm.yaml
-    wasmcloud.dev/readme-md-url: https://github.com/wasmCloud/wasmCloud/blob/main/examples/golang/components/http-hello-world/README.md
-    wasmcloud.dev/homepage: https://github.com/wasmCloud/wasmCloud/tree/main/examples/golang/components/http-hello-world
-    wasmcloud.dev/categories: |
-      http,outgoing-http,http-server,tinygo,golang,example
+    description: 'A demo for the ticker provider'
+    wasmcloud.dev/authors: James Stockton
+    wasmcloud.dev/source-url: https://github.com/jamesstocktonj1/ticker-provider/blob/main/example/wadm.yaml
+    wasmcloud.dev/readme-md-url: https://github.com/jamesstocktonj1/ticker-provider/blob/main/example/README.md
+    wasmcloud.dev/homepage: https://github.com/jamesstocktonj1/ticker-provider
 spec:
   components:
     - name: counter
       type: component
       properties:
-        image: file://./build/ticker_counter_s.wasm
+        image: file://./counter/build/ticker_counter_s.wasm
       traits:
         - type: spreadscaler
           properties:
