@@ -1,30 +1,32 @@
 package main
 
 import (
-	"context"
-
 	"github.com/nats-io/nats.go"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
-	wrpcnats "wrpc.io/go/nats"
 )
 
-var _ propagation.TextMapCarrier = &wrpcProp{}
+// NatsHeaderCarrier adapts the nats.Header to satisfy the TextMapCarrier interface.
+type NatsHeaderCarrier nats.Header
 
-type wrpcProp struct {
-	nats.Header
+var _ propagation.TextMapCarrier = NatsHeaderCarrier{}
+
+// Get returns the value associated with the passed key.
+func (hc NatsHeaderCarrier) Get(key string) string {
+	return nats.Header(hc).Get(key)
 }
 
-func (p *wrpcProp) Keys() []string {
-	keys := []string{}
-	for k := range p.Header {
-		keys = append(keys, k)
+// Set stores the key-value pair.
+func (hc NatsHeaderCarrier) Set(key, value string) {
+	nats.Header(hc).Set(key, value)
+}
+
+// Keys lists the keys stored in this carrier.
+func (hc NatsHeaderCarrier) Keys() []string {
+	keys := make([]string, 0, len(hc))
+	i := 0
+	for k := range hc {
+		keys[i] = k
+		i++
 	}
 	return keys
-}
-
-func injectTraceHeader(_ctx context.Context) context.Context {
-	carrier := &wrpcProp{nats.Header{}}
-	otel.GetTextMapPropagator().Inject(_ctx, carrier)
-	return wrpcnats.ContextWithHeader(_ctx, carrier.Header)
 }
