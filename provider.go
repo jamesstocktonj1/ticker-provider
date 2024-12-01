@@ -26,7 +26,13 @@ var (
 type Ticker struct {
 	provider *provider.WasmcloudProvider
 	tasks    gocron.Scheduler
-	taskList map[string]uuid.UUID
+	taskList map[string]*TickerTask
+}
+
+type TickerTask struct {
+	Component string
+	ID        uuid.UUID
+	Type      string
 }
 
 func CreateTicker() (*Ticker, error) {
@@ -37,7 +43,7 @@ func CreateTicker() (*Ticker, error) {
 
 	return &Ticker{
 		tasks:    s,
-		taskList: make(map[string]uuid.UUID),
+		taskList: make(map[string]*TickerTask),
 	}, nil
 }
 
@@ -57,24 +63,28 @@ func (t *Ticker) Shutdown() error {
 	return nil
 }
 
-func (t *Ticker) TaskFunc(taskId string) error {
+func (t *Ticker) TaskFunc(task *TickerTask) error {
 	ctx, span := tracer.Start(context.Background(), "TaskFunc")
-	span.SetAttributes(attribute.String("task_id", taskId))
+	span.SetAttributes(
+		attribute.String("id", task.ID.String()),
+		attribute.String("component", task.Component),
+		attribute.String("type", task.Type),
+	)
 	defer span.End()
 
-	t.provider.Logger.Info("task execute", "task_id", taskId)
+	t.provider.Logger.Info("task execute", "id", task.ID.String(), "component", task.Component, "type", task.Type)
 
 	taskErr, err := ticker.Task(
 		injectTraceHeader(ctx),
-		t.provider.OutgoingRpcClient(taskId),
+		t.provider.OutgoingRpcClient(task.Component),
 	)
 	if err != nil || taskErr == nil {
-		t.provider.Logger.Error("error: ticker.Task", "error", err, "task_id", taskId)
+		t.provider.Logger.Error("error: ticker.Task", "error", err, "id", task.ID.String())
 		span.RecordError(err)
 		return err
 	} else if taskErr.Discriminant() != ticker.TaskErrorNone {
 		err := errors.New(taskErr.String())
-		t.provider.Logger.Error("error: ticker.Task TaskError", "error", err, "task_id", taskId)
+		t.provider.Logger.Error("error: ticker.Task TaskError", "error", err, "id", task.ID.String())
 		span.RecordError(err)
 		return err
 	}
@@ -90,14 +100,21 @@ func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) erro
 		return err
 	}
 
+	jobKey := getJobKey(link)
+	jobCtx := &TickerTask{
+		Component: link.SourceID,
+		Type:      link.TargetConfig[configTypeKey],
+	}
+
 	job, err := t.tasks.NewJob(
 		jobDef,
-		gocron.NewTask(t.TaskFunc, link.SourceID),
+		gocron.NewTask(t.TaskFunc, jobCtx),
 	)
 	if err != nil {
 		return err
 	}
-	t.taskList[link.SourceID] = job.ID()
+	jobCtx.ID = job.ID()
+	t.taskList[jobKey] = jobCtx
 
 	return nil
 }
@@ -105,17 +122,18 @@ func (t *Ticker) handlePutTargetLink(link provider.InterfaceLinkDefinition) erro
 func (t *Ticker) handleDelTargetLink(link provider.InterfaceLinkDefinition) error {
 	t.provider.Logger.Info("handleDelTargetLink", "link", link)
 
-	taskId, ok := t.taskList[link.SourceID]
+	jobKey := getJobKey(link)
+	taskId, ok := t.taskList[jobKey]
 	if !ok {
 		return ErrTickerNotFound
 	}
 
-	err := t.tasks.RemoveJob(taskId)
+	err := t.tasks.RemoveJob(taskId.ID)
 	if err != nil {
 		return err
 	}
 
-	delete(t.taskList, link.SourceID)
+	delete(t.taskList, jobKey)
 	return nil
 }
 
