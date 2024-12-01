@@ -50,7 +50,7 @@ func TestPutTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks:    s,
-			taskList: make(map[string]uuid.UUID),
+			taskList: make(map[string]*TickerTask),
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
 			},
@@ -64,6 +64,7 @@ func TestPutTargetLink(t *testing.T) {
 		j.EXPECT().ID().Return(mockId).Times(1)
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "10s",
@@ -73,9 +74,9 @@ func TestPutTargetLink(t *testing.T) {
 		err := ticker.handlePutTargetLink(testLink)
 		assert.NoError(t, err)
 
-		myId, ok := ticker.taskList["my-id"]
+		myJob, ok := ticker.taskList["default.my-id"]
 		assert.True(t, ok)
-		assert.Equal(t, mockId, myId)
+		assert.Equal(t, mockId, myJob.ID)
 	})
 
 	t.Run("invalid config", func(t *testing.T) {
@@ -84,13 +85,14 @@ func TestPutTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks:    s,
-			taskList: make(map[string]uuid.UUID),
+			taskList: make(map[string]*TickerTask),
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
 			},
 		}
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "abcd",
@@ -100,7 +102,7 @@ func TestPutTargetLink(t *testing.T) {
 		err := ticker.handlePutTargetLink(testLink)
 		assert.Error(t, err)
 
-		_, ok := ticker.taskList["my-id"]
+		_, ok := ticker.taskList["default.my-id"]
 		assert.False(t, ok)
 	})
 
@@ -110,7 +112,7 @@ func TestPutTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks:    s,
-			taskList: make(map[string]uuid.UUID),
+			taskList: make(map[string]*TickerTask),
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
 			},
@@ -123,6 +125,7 @@ func TestPutTargetLink(t *testing.T) {
 		).Return(nil, testError).Times(1)
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "10s",
@@ -133,7 +136,7 @@ func TestPutTargetLink(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, testError, err)
 
-		_, ok := ticker.taskList["my-id"]
+		_, ok := ticker.taskList["default.my-id"]
 		assert.False(t, ok)
 	})
 }
@@ -145,8 +148,12 @@ func TestDelTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks: s,
-			taskList: map[string]uuid.UUID{
-				"my-id": uuid.New(),
+			taskList: map[string]*TickerTask{
+				"default.my-id": {
+					Component: "my-component",
+					ID:        uuid.New(),
+					Type:      "cron",
+				},
 			},
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
@@ -158,6 +165,7 @@ func TestDelTargetLink(t *testing.T) {
 		).Return(nil).Times(1)
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "10s",
@@ -167,7 +175,7 @@ func TestDelTargetLink(t *testing.T) {
 		err := ticker.handleDelTargetLink(testLink)
 		assert.NoError(t, err)
 
-		_, ok := ticker.taskList["my-id"]
+		_, ok := ticker.taskList["default.my-id"]
 		assert.False(t, ok)
 	})
 
@@ -177,13 +185,14 @@ func TestDelTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks:    s,
-			taskList: make(map[string]uuid.UUID),
+			taskList: make(map[string]*TickerTask),
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
 			},
 		}
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "10s",
@@ -201,8 +210,12 @@ func TestDelTargetLink(t *testing.T) {
 
 		ticker := Ticker{
 			tasks: s,
-			taskList: map[string]uuid.UUID{
-				"my-id": uuid.New(),
+			taskList: map[string]*TickerTask{
+				"default.my-id": {
+					Component: "my-component",
+					ID:        uuid.New(),
+					Type:      "cron",
+				},
 			},
 			provider: &provider.WasmcloudProvider{
 				Logger: slog.Default(),
@@ -215,6 +228,7 @@ func TestDelTargetLink(t *testing.T) {
 		).Return(testError).Times(1)
 
 		testLink := provider.InterfaceLinkDefinition{
+			Name:     "default",
 			SourceID: "my-id",
 			TargetConfig: map[string]string{
 				"period": "10s",
@@ -225,7 +239,7 @@ func TestDelTargetLink(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, testError, err)
 
-		_, ok := ticker.taskList["my-id"]
+		_, ok := ticker.taskList["default.my-id"]
 		assert.True(t, ok)
 	})
 }

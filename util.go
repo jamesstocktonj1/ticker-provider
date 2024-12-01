@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.wasmcloud.dev/provider"
 )
 
 const (
@@ -35,13 +36,16 @@ var (
 	ErrMissingConfigValue = errors.New("missing config value")
 )
 
+func getJobKey(link provider.InterfaceLinkDefinition) string {
+	return fmt.Sprintf("%s.%s", link.Name, link.SourceID)
+}
+
 func newSchedulerJob(config map[string]string) (gocron.JobDefinition, error) {
-	jobType, ok := config[configTypeKey]
-	if !ok {
-		jobType = configTypeDefault
+	if _, ok := config[configTypeKey]; !ok {
+		config[configTypeKey] = configTypeDefault
 	}
 
-	switch jobType {
+	switch config[configTypeKey] {
 	case configTypeInterval:
 		return newIntervalJob(config)
 	case configTypeCron:
