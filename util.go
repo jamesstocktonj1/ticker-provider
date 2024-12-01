@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/nats-io/nats.go"
+	"go.opentelemetry.io/otel"
 	"go.wasmcloud.dev/provider"
+	wrpcnats "wrpc.io/go/nats"
 )
 
 const (
@@ -99,4 +103,10 @@ func newStartupJob(config map[string]string) (gocron.JobDefinition, error) {
 	return gocron.OneTimeJob(
 		gocron.OneTimeJobStartDateTime(time.Now().Add(timeDelay)),
 	), nil
+}
+
+func injectTraceHeader(_ctx context.Context) context.Context {
+	carrier := nats.Header{}
+	otel.GetTextMapPropagator().Inject(_ctx, NatsHeaderCarrier(carrier))
+	return wrpcnats.ContextWithHeader(_ctx, carrier)
 }
