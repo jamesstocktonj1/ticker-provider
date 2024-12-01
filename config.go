@@ -36,12 +36,11 @@ var (
 )
 
 func newSchedulerJob(config map[string]string) (gocron.JobDefinition, error) {
-	jobType, ok := config[configTypeKey]
-	if !ok {
-		jobType = configTypeDefault
+	if _, ok := config[configTypeKey]; !ok {
+		config[configTypeKey] = configTypeDefault
 	}
 
-	switch jobType {
+	switch config[configTypeKey] {
 	case configTypeInterval:
 		return newIntervalJob(config)
 	case configTypeCron:
