@@ -4,7 +4,7 @@ This provider is a simple ticker/cron job caller for [wasmCloud](https://github.
 
 ## Provider Config
 
-This provider can be used in two ways, either a simple interval ticker or as a cron job. Here are some example configurations:
+This provider can be used in few ways: a simple interval ticker, a start-up job or a cron job. Here are some example configurations:
 
 ### Interval
 ```
@@ -31,6 +31,15 @@ target_config:
       type: cron            # cron job using the `cron` type
       seconds: "true"       # the `seconds` bool adds an extra column at the start for seconds
       cron: "0 * * * * *"     # cron configuration e.g. once every minute (every 0th second)
+```
+
+### Start Up
+```
+target_config:
+  - name: startup-config
+    properties:
+      type: startup       # startup job using the `startup` type
+      delay: 30s          # delay config, the task will be executed 30s after the link is created
 ```
 
 ## Wit Package
