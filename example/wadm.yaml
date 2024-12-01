@@ -44,11 +44,15 @@ spec:
               #     type: cron
               #     cron: "0 * * * * *"
               #     seconds: "true"
+              # - name: startup-config
+              #   properties:
+              #     type: startup
+              #     delay: 30s
 
     - name: ticker
       type: capability
       properties:
-        # image: file://../../build/wasmcloud-ticker-provider.par.gz
+        # image: file://../build/wasmcloud-ticker-provider.par.gz
         image: ghcr.io/jamesstocktonj1/ticker-provider:main
 
     - name: httpserver
