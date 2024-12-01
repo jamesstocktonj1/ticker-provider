@@ -82,4 +82,15 @@ func TestNewSchedulerJob(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, job)
 	})
+
+	t.Run("startup: valid config", func(t *testing.T) {
+		cfg := map[string]string{
+			"type":  "startup",
+			"delay": "30s",
+		}
+
+		job, err := newSchedulerJob(cfg)
+		assert.NoError(t, err)
+		assert.NotNil(t, job)
+	})
 }
