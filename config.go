@@ -16,6 +16,7 @@ const (
 
 	configTypeInterval = "interval"
 	configTypeCron     = "cron"
+	configTypeStartup  = "startup"
 
 	// Interval Config
 	intervalConfigKey = "period"
@@ -23,6 +24,9 @@ const (
 	// Cron Config
 	cronConfigKey    = "cron"
 	cronSecConfigKey = "seconds"
+
+	// Start Up Config
+	delayConfigKey = "delay"
 )
 
 var (
@@ -42,6 +46,8 @@ func newSchedulerJob(config map[string]string) (gocron.JobDefinition, error) {
 		return newIntervalJob(config)
 	case configTypeCron:
 		return newCronJob(config)
+	case configTypeStartup:
+		return newStartupJob(config)
 	default:
 		return nil, ErrInvalidJobType
 	}
@@ -73,4 +79,20 @@ func newCronJob(config map[string]string) (gocron.JobDefinition, error) {
 	}
 
 	return gocron.CronJob(cronConfig, cronSeconds), nil
+}
+
+func newStartupJob(config map[string]string) (gocron.JobDefinition, error) {
+	delayConfig, ok := config[delayConfigKey]
+	if !ok {
+		return nil, fmt.Errorf("%w: key %s", ErrMissingConfigValue, delayConfigKey)
+	}
+
+	timeDelay, err := time.ParseDuration(delayConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return gocron.OneTimeJob(
+		gocron.OneTimeJobStartDateTime(time.Now().Add(timeDelay)),
+	), nil
 }
