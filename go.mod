@@ -7,7 +7,7 @@ require (
 	github.com/go-co-op/gocron/mocks/v2 v2.0.0-20241125191624-c7c0a17f0572
 	github.com/go-co-op/gocron/v2 v2.14.0
 	github.com/google/uuid v1.6.0
-	github.com/nats-io/nats.go v1.37.0
+	github.com/nats-io/nats.go v1.38.0
 	github.com/samber/slog-multi v1.2.4
 	github.com/stretchr/testify v1.10.0
 	go.bytecodealliance.org/cm v0.1.0
@@ -30,7 +30,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0 // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
-	github.com/nats-io/nkeys v0.4.7 // indirect
+	github.com/nats-io/nkeys v0.4.9 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
