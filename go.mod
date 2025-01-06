@@ -8,7 +8,7 @@ require (
 	github.com/go-co-op/gocron/v2 v2.14.0
 	github.com/google/uuid v1.6.0
 	github.com/nats-io/nats.go v1.38.0
-	github.com/samber/slog-multi v1.2.4
+	github.com/samber/slog-multi v1.3.3
 	github.com/stretchr/testify v1.10.0
 	go.bytecodealliance.org/cm v0.1.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.8.0
