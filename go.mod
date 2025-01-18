@@ -5,7 +5,7 @@ go 1.23.1
 require (
 	github.com/bytecodealliance/wasm-tools-go v0.3.2
 	github.com/go-co-op/gocron/mocks/v2 v2.0.0-20241125191624-c7c0a17f0572
-	github.com/go-co-op/gocron/v2 v2.14.1
+	github.com/go-co-op/gocron/v2 v2.14.2
 	github.com/google/uuid v1.6.0
 	github.com/nats-io/nats.go v1.38.0
 	github.com/samber/slog-multi v1.3.3
