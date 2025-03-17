@@ -10,7 +10,7 @@ require (
 	github.com/nats-io/nats.go v1.39.1
 	github.com/samber/slog-multi v1.4.0
 	github.com/stretchr/testify v1.10.0
-	go.bytecodealliance.org/cm v0.1.0
+	go.bytecodealliance.org/cm v0.2.2
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
 	go.opentelemetry.io/otel v1.34.0
 	go.uber.org/mock v0.5.0
